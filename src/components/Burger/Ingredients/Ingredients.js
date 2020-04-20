@@ -11,7 +11,7 @@ class Ingredients extends Component {
         ingredient = <div className={classes.BreadBottom}></div>;
         break;
       case "bread-top":
-        ingredients = (
+        ingredient = (
           <div className={classes.BreadTop}>
             <div className={classes.Seeds1}></div>
             <div className={classes.Seeds2}></div>
@@ -37,7 +37,7 @@ class Ingredients extends Component {
   }
 }
 
-Ingredients.PropTypes = {
+Ingredients.propTypes = {
   type: PropTypes.string.isRequired
 };
 
