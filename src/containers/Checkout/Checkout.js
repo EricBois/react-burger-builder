@@ -41,7 +41,7 @@ class Checkout extends Component {
           continued={this.checkoutContinuedHander}
           ingredients={this.state.ingredients}
         />
-        // props to be able to use history.push in contact data, passing all props in module
+        {/* props to be able to use history.push in contact data, passing all props in module */}
         <Route path={this.props.match.path + '/contact-data'} render={(props) => (<ContactData price={this.state.totalPrice} ingredients={this.state.ingredients} {...props} />)} />
       </div>
     );
