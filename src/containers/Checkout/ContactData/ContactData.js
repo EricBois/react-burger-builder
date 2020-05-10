@@ -7,22 +7,25 @@ import axios from '../../../axios-orders';
 
 class ContactData extends Component {
    
-  wrapperElements = (type, config, value) => {
+  wrapperElements = (type, config, value, validate) => {
     return {
       elementType: type,
         elementConfig: config,
-        value: value
+        value: value,
+        validation: validate,
+        valid: false,
+        touched: false
     }
   }
 
   state = {
     orderForm: {
       //creating with wrapper
-      name: this.wrapperElements('input', {type: 'text', placeholder: 'Your Name' }, ''),
-      street: this.wrapperElements('input', {type: 'text', placeholder: 'Street' }, ''),
-      postalCode: this.wrapperElements('input', {type: 'text', placeholder: 'Postal Code' }, ''),
-      country: this.wrapperElements('input', {type: 'text', placeholder: 'Country' }, ''),
-      email: this.wrapperElements('input', {type: 'email', placeholder: 'Your Email' }, ''),
+      name: this.wrapperElements('input', {type: 'text', placeholder: 'Your Name' }, '', {required: true}),
+      street: this.wrapperElements('input', {type: 'text', placeholder: 'Street' }, '', {required: true}),
+      postalCode: this.wrapperElements('input', {type: 'text', placeholder: 'Postal Code' }, '', {required: true, minLength: 6, maxLength: 6}),
+      country: this.wrapperElements('input', {type: 'text', placeholder: 'Country' }, '', {required: true}),
+      email: this.wrapperElements('input', {type: 'email', placeholder: 'Your Email' }, '', {required: true}),
       deliveryMethod: this.wrapperElements('select', {options: [
         {value: 'fastest', displayValue: 'Fastest'},
         {value: 'regular', displayValue: 'Regular'},
@@ -54,6 +57,22 @@ class ContactData extends Component {
       });
   };
 
+  checkValidity(value, rules) {
+    let isValid = true;
+
+    if (rules.required) {
+      isValid = value.trim() !== '' && isValid;
+    }
+    if (rules.minLength) {
+      isValid = value.length >= rules.minLength && isValid
+    }
+    if (rules.maxLength) {
+      isValid = value.length <= rules.maxLength && isValid
+    }
+
+    return isValid;
+  }
+
   inputChangeHandler = (e, inputId) => {
     // clone data but doesnt clone nested data
     const updatedOrderForm = {
@@ -65,6 +84,9 @@ class ContactData extends Component {
     };
     // set changed value
     updatedFormElement.value = e.target.value;
+    // check if rules are valid
+    updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
+    updatedFormElement.touched = true;
     updatedOrderForm[inputId] = updatedFormElement;
     this.setState({orderForm: updatedOrderForm});
   }
@@ -85,6 +107,9 @@ class ContactData extends Component {
             elementType={formElement.config.elementType}
             elementConfig={formElement.config.elementConfig}
             value={formElement.config.value}
+            invalid={!formElement.config.valid}
+            shouldValidate={formElement.config.validation}
+            touched={formElement.config.touched}
             changed={(event) => this.inputChangeHandler(event, formElement.id)}
           />
         ))}
