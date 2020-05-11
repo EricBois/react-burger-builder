@@ -7,13 +7,13 @@ import axios from '../../../axios-orders';
 
 class ContactData extends Component {
    
-  wrapperElements = (type, config, value, validate) => {
+  wrapperElements = (type, config, value, validate, valid) => {
     return {
       elementType: type,
         elementConfig: config,
         value: value,
         validation: validate,
-        valid: false,
+        valid: valid || true,
         touched: false
     }
   }
@@ -21,17 +21,18 @@ class ContactData extends Component {
   state = {
     orderForm: {
       //creating with wrapper
-      name: this.wrapperElements('input', {type: 'text', placeholder: 'Your Name' }, '', {required: true}),
-      street: this.wrapperElements('input', {type: 'text', placeholder: 'Street' }, '', {required: true}),
-      postalCode: this.wrapperElements('input', {type: 'text', placeholder: 'Postal Code' }, '', {required: true, minLength: 6, maxLength: 6}),
-      country: this.wrapperElements('input', {type: 'text', placeholder: 'Country' }, '', {required: true}),
-      email: this.wrapperElements('input', {type: 'email', placeholder: 'Your Email' }, '', {required: true}),
+      name: this.wrapperElements('input', {type: 'text', placeholder: 'Your Name' }, '', {required: true}, false),
+      street: this.wrapperElements('input', {type: 'text', placeholder: 'Street' }, '', {required: true}, false),
+      postalCode: this.wrapperElements('input', {type: 'text', placeholder: 'Postal Code' }, '', {required: true, minLength: 6, maxLength: 6}, false),
+      country: this.wrapperElements('input', {type: 'text', placeholder: 'Country' }, '', {required: true}, false),
+      email: this.wrapperElements('input', {type: 'email', placeholder: 'Your Email' }, '', {required: true}, false),
       deliveryMethod: this.wrapperElements('select', {options: [
         {value: 'fastest', displayValue: 'Fastest'},
         {value: 'regular', displayValue: 'Regular'},
-      ] }, ''),
+      ] }, 'fastest', {}),
     },
     loading: false,
+    formIsValid: false
   };
 
   orderHandler = (e) => {
@@ -88,7 +89,13 @@ class ContactData extends Component {
     updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
     updatedFormElement.touched = true;
     updatedOrderForm[inputId] = updatedFormElement;
-    this.setState({orderForm: updatedOrderForm});
+
+    let formIsValid = true;
+    for (let inputId in updatedOrderForm) {
+      formIsValid = updatedOrderForm[inputId].valid && formIsValid;
+    }
+
+    this.setState({orderForm: updatedOrderForm, formIsValid: formIsValid});
   }
 
   render() {
@@ -113,7 +120,7 @@ class ContactData extends Component {
             changed={(event) => this.inputChangeHandler(event, formElement.id)}
           />
         ))}
-        <Button btnType="Success">
+        <Button disabled={!this.state.formIsValid} btnType="Success">
           Order
         </Button>
       </form>

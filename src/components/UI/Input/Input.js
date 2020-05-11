@@ -3,10 +3,10 @@ import classes from './Input.module.css';
 
 const input = (props) => {
   let inputElement = null;
-  const inputClasses = [classes.InputElement]
+  const inputClasses = [classes.InputElement];
 
   if (props.invalid && props.shouldValidate && props.touched) {
-    inputClasses.push(classes.Invalid)
+    inputClasses.push(classes.Invalid);
   }
 
   switch (props.elementType) {
@@ -37,8 +37,10 @@ const input = (props) => {
           value={props.value}
           onChange={props.changed}
         >
-          {props.elementConfig.options.map(option => (
-            <option key={option.value} value={option.value}>{option.displayValue}</option>
+          {props.elementConfig.options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.displayValue}
+            </option>
           ))}
         </select>
       );
@@ -54,10 +56,16 @@ const input = (props) => {
       );
   }
 
+  let validationError = null;
+  if (props.invalid && props.touched) {
+    validationError = <p className={classes.ValidationError}>Please enter a valid value!</p>;
+  }
+
   return (
     <div className={classes.Input}>
       <label className={classes.Label}>{props.label}</label>
       {inputElement}
+      {validationError}
     </div>
   );
 };
